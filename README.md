@@ -23,7 +23,7 @@
 O schema do banco foi gerado através da ferramenta https://sqldbm.com para o banco PostgreSQL.
 O .sql gerado está disponível em resources/schema.sql
 
-![DB](https://github.com/ViniciusSambinello/projeto/blob/master/database.png)
+![DB](https://github.com/ViniciusSambinello/srm-challenge/blob/master/database.png)
 
 Endpoints de transações
 =================

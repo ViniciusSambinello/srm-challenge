@@ -1,6 +1,7 @@
 package dev.sambinello.currency.exchange.srm.challenge.adapter.output.repository;
 
 import dev.sambinello.currency.exchange.srm.challenge.adapter.output.repository.database.RealmEntityDatabase;
+import dev.sambinello.currency.exchange.srm.challenge.domain.exceptions.RealmNotFoundException;
 import dev.sambinello.currency.exchange.srm.challenge.domain.model.Currency;
 import dev.sambinello.currency.exchange.srm.challenge.domain.model.Realm;
 import dev.sambinello.currency.exchange.srm.challenge.domain.ports.output.CurrencyRepository;
@@ -22,12 +23,16 @@ public class RealmRepositoryAdapterImpl implements RealmRepository {
 
     @Override
     public Optional<Realm> findById(String realmId) {
-        return database.findById(Long.valueOf(realmId))
-                .map(realmEntity -> {
-                    final Currency currency = currencyRepository.findById(realmEntity.getCurrency().getId().toString())
-                            .orElseThrow();
+        try {
+            return database.findById(Long.valueOf(realmId))
+                    .map(realmEntity -> {
+                        final Currency currency = currencyRepository.findById(realmEntity.getCurrency().getId().toString())
+                                .orElseThrow();
 
-                    return new Realm(realmEntity.getId().toString(), realmEntity.getName(), currency);
-                });
+                        return new Realm(realmEntity.getId().toString(), realmEntity.getName(), currency);
+                    });
+        } catch (NumberFormatException ignored){
+            throw new RealmNotFoundException();
+        }
     }
 }
