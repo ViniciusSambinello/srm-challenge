@@ -1,0 +1,60 @@
+/* Tables */
+CREATE TABLE CURRENCY
+(
+    ID             bigserial             NOT NULL PRIMARY KEY,
+    NAME           character varying(50) NOT NULL,
+    CREATED_AT     timestamp             NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE PRODUCT
+(
+    ID             bigserial             NOT NULL PRIMARY KEY,
+    NAME           character varying(50) NOT NULL
+);
+
+CREATE TABLE REALM
+(
+    ID             bigserial             NOT NULL PRIMARY KEY,
+    NAME           character varying(50) NOT NULL,
+    CREATED_AT     timestamp             NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CURRENCY_ID    bigint                NOT NULL REFERENCES CURRENCY (ID)
+);
+
+CREATE TABLE CURRENCY_EXCHANGE_RATE
+(
+    ID                     bigserial             NOT NULL PRIMARY KEY,
+    ORIGIN_CURRENCY_ID     bigint                NOT NULL REFERENCES CURRENCY (ID),
+    TARGET_CURRENCY_ID     bigint                NOT NULL REFERENCES CURRENCY (ID),
+    EXCHANGE_RATE          numeric(15, 2)        NOT NULL
+);
+
+CREATE TABLE PRODUCT_VALUE
+(
+    ID              bigserial          NOT NULL PRIMARY KEY,
+    PRODUCT_ID      bigint             NOT NULL REFERENCES PRODUCT (ID),
+    CURRENCY_ID     bigint             NOT NULL REFERENCES CURRENCY (ID),
+    PRODUCT_VALUE   numeric(15, 2)     NOT NULL
+);
+
+CREATE TABLE TRANSACTIONS
+(
+    ID                          bigserial          NOT NULL PRIMARY KEY,
+    PRODUCT_ID                  bigint             NOT NULL REFERENCES PRODUCT (ID),
+    EXCHANGE_RATE               numeric(15, 2)     NOT NULL,
+    ORIGIN_REALM_ID             bigint             NOT NULL REFERENCES REALM (ID),
+    TARGET_REALM_ID             bigint             NOT NULL REFERENCES REALM (ID),
+    ORIGIN_CURRENCY_ID          bigint             NOT NULL REFERENCES CURRENCY (ID),
+    TARGET_CURRENCY_ID          bigint             NOT NULL REFERENCES CURRENCY (ID),
+    ORIGIN_TRANSACTION_VALUE    numeric(15, 2)     NOT NULL,
+    TARGET_TRANSACTION_VALUE    numeric(15, 2)     NOT NULL,
+    CREATED_AT                  timestamp          NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+/* Indexes */
+CREATE INDEX CURRENCY_EXCHANGE_RATE_ORIGIN_CURRENCY_INDEX ON CURRENCY_EXCHANGE_RATE (ORIGIN_CURRENCY_ID);
+CREATE INDEX CURRENCY_EXCHANGE_RATE_TARGET_CURRENCY_INDEX ON CURRENCY_EXCHANGE_RATE (TARGET_CURRENCY_ID);
+
+CREATE INDEX PRODUCT_VALUE_PRODUCT_ID_INDEX ON PRODUCT_VALUE (PRODUCT_ID);
+CREATE INDEX PRODUCT_VALUE_CURRENCY_ID_INDEX ON PRODUCT_VALUE (CURRENCY_ID);
+
+CREATE INDEX TRANSACTIONS_ORIGIN_REALM_ID_INDEX ON TRANSACTIONS (ORIGIN_REALM_ID);

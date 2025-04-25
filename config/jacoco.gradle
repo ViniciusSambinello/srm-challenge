@@ -1,0 +1,31 @@
+def excludedFiles = ["**/Application*", "dev/sambinello/currency/exchange/srm/challenge/**"]
+
+jacocoTestReport {
+    reports {
+        xml.required = false
+        csv.required = false
+        html.outputLocation = layout.buildDirectory.dir('jacocoHtml')
+    }
+
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: excludedFiles)
+        }))
+    }
+}
+
+jacocoTestCoverageVerification {
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: excludedFiles)
+        }))
+    }
+
+    violationRules {
+        rule {
+            limit {
+                minimum = "0.87".toBigDecimal()
+            }
+        }
+    }
+}
